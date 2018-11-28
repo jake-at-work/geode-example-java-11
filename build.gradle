@@ -1,0 +1,25 @@
+plugins {
+  id 'java'
+  id 'org.gradle.java.experimental-jigsaw' version '0.1.1'
+}
+
+group 'com.example'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 11
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+  maven {
+    url 'http://maven.apachegeode-ci.info/snapshots'
+  }
+}
+
+dependencies {
+  implementation 'org.apache.geode:geode-module:1.9.0-SNAPSHOT'
+
+  testImplementation 'junit:junit:4.12'
+}
+
+javaModule.name = 'com.example.java11example'
