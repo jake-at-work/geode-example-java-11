@@ -55,6 +55,8 @@ public class Main {
 
     helloWorldAutoPdx(region);
 
+    helloWorldAutoPdxQuery(region);
+
     cache.close();
 
   }
@@ -104,6 +106,15 @@ public class Main {
     region.put(1, new AutoSerializableObject("Hello World from auto PDX!"));
     AutoSerializableObject v = (AutoSerializableObject) region.get(1);
     System.out.println(v.getValue());
+  }
+
+
+  private static void helloWorldAutoPdxQuery(Region<Integer, Object> region) throws Exception {
+    region.put(1, new AutoSerializableObject("Hello World from auto PDX Query!"));
+    SelectResults<String> results = region.query("SELECT e.toString() FROM /example-region e");
+    for (String v : results) {
+      System.out.println(v);
+    }
   }
 
 }
