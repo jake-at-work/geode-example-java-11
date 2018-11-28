@@ -27,17 +27,23 @@ import org.apache.geode.cache.query.CqEvent;
 import org.apache.geode.cache.query.CqListener;
 import org.apache.geode.cache.query.CqQuery;
 import org.apache.geode.cache.query.SelectResults;
+import org.apache.geode.pdx.ReflectionBasedAutoSerializer;
 
 public class Main {
 
   public static void main (String[] args) throws Exception {
     // connect to the locator using default port 10334
-    ClientCache cache = new ClientCacheFactory().addPoolLocator("127.0.0.1", 10334).setPoolSubscriptionEnabled(true)
-        .set("log-level", "WARN").create();
+    ClientCache cache = new ClientCacheFactory()
+        .addPoolLocator("127.0.0.1", 10334)
+        .setPoolSubscriptionEnabled(true)
+        .set("log-level", "WARN")
+        .setPdxSerializer(
+            new ReflectionBasedAutoSerializer(com.example.AutoSerializableObject.class.getName()))
+        .create();
 
     // create a local region that matches the server region
-    Region<Integer, String> region =
-        cache.<Integer, String>createClientRegionFactory(ClientRegionShortcut.PROXY)
+    Region<Integer, Object> region =
+        cache.<Integer, Object>createClientRegionFactory(ClientRegionShortcut.PROXY)
             .create("example-region");
 
 
@@ -47,17 +53,19 @@ public class Main {
 
     helloWorldCQ(region);
 
+    helloWorldAutoPdx(region);
+
     cache.close();
 
   }
 
-  private static void helloWorldGetPut(Region<Integer, String> region) {
+  private static void helloWorldGetPut(Region<Integer, Object> region) {
     region.put(1, "Hello world from get/put!");
-    String v = region.get(1);
+    String v =  (String) region.get(1);
     System.out.println(v);
   }
 
-  private static void helloWorldQuery(Region<Integer, String> region) throws Exception {
+  private static void helloWorldQuery(Region<Integer, Object> region) throws Exception {
     region.put(1, "Hello world from query!");
     SelectResults<String> results = region.query("SELECT * FROM /example-region");
     for (String v : results) {
@@ -65,7 +73,7 @@ public class Main {
     }
   }
 
-  private static void helloWorldCQ(Region<Integer, String> region) throws Exception {
+  private static void helloWorldCQ(Region<Integer, Object> region) throws Exception {
     AtomicBoolean done = new AtomicBoolean(false);
     CqAttributesFactory cqf = new CqAttributesFactory();
     cqf.addCqListener(new CqListener() {
@@ -88,11 +96,14 @@ public class Main {
 
     region.put(1, "Hello world from cq!");
 
-    while (!done.get()) {
-       Thread.sleep(1000);
-       System.out.print(".");
-    }
+    while (!done.get()) ;
     cq.close();
+  }
+
+  private static void helloWorldAutoPdx(Region<Integer, Object> region) {
+    region.put(1, new AutoSerializableObject("Hello World from auto PDX!"));
+    AutoSerializableObject v = (AutoSerializableObject) region.get(1);
+    System.out.println(v.getValue());
   }
 
 }

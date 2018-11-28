@@ -13,15 +13,23 @@
  * the License.
  */
 
-module com.example.java11example {
-  exports com.example;
+package com.example;
 
-  // for PDX auto serialization
-  opens com.example to org.apache.geode;
+public class AutoSerializableObject {
+  private String value;
 
-  requires org.apache.geode;
+  public AutoSerializableObject() {}
 
-  // TODO why do we need these when app doesn't use them directly.
-  requires org.apache.logging.log4j;
-  requires java.sql;
+  public AutoSerializableObject(String value) {
+    this.value = value;
+  }
+
+  public void setValue(String value) {
+    this.value = value;
+  }
+
+  public String getValue() {
+    return value;
+  }
+
 }
