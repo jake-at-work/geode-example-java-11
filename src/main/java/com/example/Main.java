@@ -38,7 +38,7 @@ public class Main {
         .setPoolSubscriptionEnabled(true)
         .set("log-level", "WARN")
         .setPdxSerializer(
-            new ReflectionBasedAutoSerializer(com.example.AutoSerializableObject.class.getName()))
+            new ReflectionBasedAutoSerializer("com\\.example\\..*"))
         .create();
 
     // create a local region that matches the server region
