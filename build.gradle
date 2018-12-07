@@ -1,12 +1,14 @@
 plugins {
   id 'java'
   id 'org.gradle.java.experimental-jigsaw' version '0.1.1'
+  id "io.spring.dependency-management" version "1.0.6.RELEASE"
 }
 
 group 'com.example'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 11
+sourceCompatibility = 9
+targetCompatibility = 9
 
 repositories {
   mavenLocal()
@@ -16,8 +18,15 @@ repositories {
   }
 }
 
+dependencyManagement {
+  imports {
+    mavenBom 'org.apache.geode:geode-client-bom:1.9.0-SNAPSHOT'
+  }
+}
+
 dependencies {
-  implementation 'org.apache.geode:geode-module:1.9.0-SNAPSHOT'
+  implementation 'org.apache.geode:geode-core'
+  implementation 'org.apache.geode:geode-cq'
 
   testImplementation 'junit:junit:4.12'
 }

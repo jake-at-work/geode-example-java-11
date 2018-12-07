@@ -17,9 +17,11 @@ module com.example.java11example {
   exports com.example;
 
   // for PDX auto serialization
-  opens com.example to org.apache.geode;
+  opens com.example to org.apache.geode.core;
 
-  requires org.apache.geode;
+  requires org.apache.geode.core;
+  requires org.apache.geode.cq;
+
 
   // TODO why do we need these when app doesn't use them directly.
   requires org.apache.logging.log4j;
